@@ -1,37 +1,37 @@
 import os
-import telebot
+import logging
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 from openai import OpenAI
-from dotenv import load_dotenv
 
-# ENV faýlyny ýükleýäris
-load_dotenv()
+logging.basicConfig(level=logging.INFO)
 
-# Tokenleri alyp gelýäris
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+OPENAI_KEY = os.getenv("OPENAI_KEY")
 
-# Telegram bot
-bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+client = OpenAI(api_key=OPENAI_KEY)
 
-# OpenAI client
-client = OpenAI(api_key=OPENAI_API_KEY)
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Salam! Men Yega_AI. Näme kömek edip bilerin?")
 
-# Handler — islendik mesaj gelende jogap berýär
-@bot.message_handler(func=lambda m: True)
-def reply(message):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "user", "content": message.text}
-            ]
-        )
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_text = update.message.text
 
-        answer = response.choices[0].message["content"]
-        bot.send_message(message.chat.id, answer)
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": user_text}]
+    )
 
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Hata: {e}")
+    bot_reply = response.choices[0].message["content"]
+    await update.message.reply_text(bot_reply)
 
-# Boty işledýäris
-bot.polling()
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT, handle_message))
+
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
