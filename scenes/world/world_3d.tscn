@@ -1,0 +1,103 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/day_night_cycle.gd" id="1_daynight"]
+[ext_resource type="PackedScene" path="res://scenes/characters/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/characters/horse.tscn" id="3_horse"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="5_pause"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_ui.tscn" id="6_dialogue"]
+[ext_resource type="PackedScene" path="res://scenes/ui/quest_hud.tscn" id="7_qhud"]
+[ext_resource type="PackedScene" path="res://scenes/world/npc.tscn" id="8_npc"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/enemy_base.tscn" id="9_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/world/checkpoint.tscn" id="10_checkpoint"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.25, 0.45, 0.75, 1)
+sky_horizon_color = Color(0.7, 0.75, 0.8, 1)
+ground_bottom_color = Color(0.3, 0.25, 0.2, 1)
+
+[sub_resource type="Sky" id="Sky_world"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_world"]
+background_mode = 2
+sky = SubResource("Sky_world")
+ambient_light_source = 3
+ambient_light_color = Color(0.5, 0.5, 0.5, 1)
+tonemap_mode = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(400, 2, 400)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+size = Vector3(400, 2, 400)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_desert"]
+albedo_color = Color(0.76, 0.65, 0.42, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fortress"]
+size = Vector3(20, 8, 20)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fortress"]
+albedo_color = Color(0.5, 0.4, 0.3, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fortress"]
+size = Vector3(20, 8, 20)
+
+[node name="World3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_world")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 50, 0)
+shadow_enabled = true
+script = ExtResource("1_daynight")
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("BoxMesh_ground")
+surface_material_override/0 = SubResource("StandardMaterial3D_desert")
+
+[node name="Fortress" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -50)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Fortress"]
+mesh = SubResource("BoxMesh_fortress")
+surface_material_override/0 = SubResource("StandardMaterial3D_fortress")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fortress"]
+shape = SubResource("BoxShape3D_fortress")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Gyrat" parent="." instance=ExtResource("3_horse")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -3)
+
+[node name="VillageElder" parent="." instance=ExtResource("8_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -5)
+
+[node name="Enemy1" parent="." instance=ExtResource("9_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -20)
+
+[node name="Enemy2" parent="." instance=ExtResource("9_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -25)
+
+[node name="Checkpoint1" parent="." instance=ExtResource("10_checkpoint")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
+
+[node name="UI" type="Node" parent="."]
+
+[node name="HUD" parent="UI" instance=ExtResource("4_hud")]
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("5_pause")]
+
+[node name="DialogueUI" parent="UI" instance=ExtResource("6_dialogue")]
+
+[node name="QuestHUD" parent="UI" instance=ExtResource("7_qhud")]
