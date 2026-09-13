@@ -16,7 +16,7 @@ func _on_body_entered(body: Node3D):
 	if body is Player and not is_activated:
 		is_activated = true
 		if SaveManager:
-			SaveManager.save_data["checkpoint_pos"] = global_position
+			SaveManager.set_checkpoint(global_position)
 			SaveManager.save_game()
 		emit_signal("checkpoint_activated", self)
 

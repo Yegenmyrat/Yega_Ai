@@ -147,8 +147,8 @@ func take_damage(amount: float, _attacker_pos: Vector3 = Vector3.ZERO):
 
 func die():
 	# Respawn at save checkpoint
-	if SaveManager and SaveManager.save_data.has("checkpoint_pos"):
-		global_position = SaveManager.save_data["checkpoint_pos"]
+	if SaveManager:
+		global_position = SaveManager.get_checkpoint()
 		health = max_health
 		stamina = max_stamina
 		emit_signal("stats_changed", health, max_health, stamina, max_stamina)

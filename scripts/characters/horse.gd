@@ -32,15 +32,22 @@ func _physics_process(delta: float):
 		# Process horse movement based on input vector
 		var move_speed = gallop_speed if is_galloping else trot_speed
 
-		# Move forward/backward relative to horse heading
+		# Move forward/backward relative to camera direction if rider has camera
 		if input_vector != Vector2.ZERO:
-			var target_rot = atan2(-input_vector.x, -input_vector.y)
-			# Turn horse
-			rotation.y = lerp_angle(rotation.y, rotation.y + target_rot * delta * 3.0, 5.0 * delta)
+			var cam_forward = Vector3.FORWARD
+			var cam_right = Vector3.RIGHT
+			if current_rider and current_rider.has_node("CameraPivot"):
+				var cam_pivot = current_rider.get_node("CameraPivot")
+				if cam_pivot.has_method("get_camera_forward"):
+					cam_forward = cam_pivot.get_camera_forward()
+					cam_right = cam_pivot.get_camera_right()
 
-			var forward_dir = -transform.basis.z
-			velocity.x = forward_dir.x * move_speed * input_vector.length()
-			velocity.z = forward_dir.z * move_speed * input_vector.length()
+			var move_dir = (cam_forward * -input_vector.y + cam_right * input_vector.x).normalized()
+			if move_dir != Vector3.ZERO:
+				var target_angle = atan2(-move_dir.x, -move_dir.z)
+				rotation.y = lerp_angle(rotation.y, target_angle, 8.0 * delta)
+				velocity.x = move_dir.x * move_speed
+				velocity.z = move_dir.z * move_speed
 		else:
 			velocity.x = move_toward(velocity.x, 0, trot_speed)
 			velocity.z = move_toward(velocity.z, 0, trot_speed)

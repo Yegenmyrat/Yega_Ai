@@ -5,7 +5,7 @@ const SAVE_PATH = "user://gorogly_save.json"
 var save_data: Dictionary = {
 	"player_health": 100.0,
 	"player_stamina": 100.0,
-	"checkpoint_pos": Vector3(0, 1, 0),
+	"checkpoint_pos": {"x": 0.0, "y": 1.0, "z": 0.0},
 	"completed_quests": [],
 	"active_quests": {},
 	"inventory": []
@@ -31,3 +31,13 @@ func load_game() -> bool:
 			save_data = json.get_data()
 			return true
 	return false
+
+func set_checkpoint(pos: Vector3):
+	save_data["checkpoint_pos"] = {"x": pos.x, "y": pos.y, "z": pos.z}
+
+func get_checkpoint() -> Vector3:
+	if save_data.has("checkpoint_pos"):
+		var c = save_data["checkpoint_pos"]
+		if c is Dictionary and c.has("x") and c.has("y") and c.has("z"):
+			return Vector3(c["x"], c["y"], c["z"])
+	return Vector3(0, 1, 0)

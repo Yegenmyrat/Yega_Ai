@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/npc.tscn" id="8_npc"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/enemy_base.tscn" id="9_enemy"]
 [ext_resource type="PackedScene" path="res://scenes/world/checkpoint.tscn" id="10_checkpoint"]
+[ext_resource type="Script" path="res://scripts/world/world_3d.gd" id="11_world"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.25, 0.45, 0.75, 1)
@@ -45,6 +46,7 @@ albedo_color = Color(0.5, 0.4, 0.3, 1)
 size = Vector3(20, 8, 20)
 
 [node name="World3D" type="Node3D"]
+script = ExtResource("11_world")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_world")

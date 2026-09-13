@@ -6,6 +6,7 @@ extends CanvasLayer
 @onready var health_label: Label = $Control/VBoxContainer/HealthBar/HealthLabel
 @onready var stamina_label: Label = $Control/VBoxContainer/StaminaBar/StaminaLabel
 @onready var interact_prompt: Label = $Control/InteractPrompt
+@onready var pause_button: Button = $Control/PauseButton
 @onready var touch_controls: TouchControls = $TouchControls
 
 var player: Player = null
@@ -15,6 +16,9 @@ func _ready():
 		GameManager.player_spawned.connect(_on_player_spawned)
 		if GameManager.player:
 			_on_player_spawned(GameManager.player)
+
+	if pause_button:
+		pause_button.pressed.connect(_on_pause_pressed)
 
 	if touch_controls:
 		touch_controls.attack_pressed.connect(_on_attack)
@@ -73,3 +77,7 @@ func _on_interact():
 func _on_sprint(is_sprinting: bool):
 	if player:
 		player.set_sprinting(is_sprinting)
+
+func _on_pause_pressed():
+	if GameManager:
+		GameManager.toggle_pause()
